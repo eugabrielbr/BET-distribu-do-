@@ -24,6 +24,29 @@ class Ledger:
         except FileNotFoundError:
             self.transacoes = []
 
+    def retornar_saldo(hash):
+
+        saldo = 0
+        # Percorre todas as transações no ledger
+
+        try:
+
+            with open("ledger.json", "r") as file:
+                data = json.load(file)
+            
+                for transacao in data:
+                    if transacao["id_cliente"] == hash:
+                        if transacao["tipo"] == "entrada":
+                            saldo += transacao["valor_apostado"]  # Depósitos aumentam o saldo
+                        elif transacao["tipo"] == "saida":
+                            saldo -= transacao["valor_apostado"]  # Apostas ou retiradas diminuem o saldo
+                return saldo
+        except:
+            return 0
+        
+        #lembrar de manter essas chaves no JSON
+    
+
 class Transacao:
     def __init__(self, client_id, valor, tipo_aposta):
         self.client_id = client_id
