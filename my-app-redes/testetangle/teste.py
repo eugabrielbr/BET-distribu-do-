@@ -51,8 +51,6 @@ addresses = secret_manager_object.generate_ed25519_addresses(
 print(f"\nFrase gerada: {frase}") 
 print(f"\n{addresses}")
 
-
-
 #consultar saldo
 #obs: para adicionar dinheiro na carteira deve-se solicitar a um shimmer faucet
 

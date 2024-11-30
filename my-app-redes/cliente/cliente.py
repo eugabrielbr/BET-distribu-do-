@@ -4,8 +4,13 @@ import random
 import hashlib
 import flask 
 import jogos
-from ledger import Ledger,Transacao
-from comunicacao import enviar_transacao
+import comunicacao
+from iota_sdk import Client,MnemonicSecretManager,SecretManager,CoinType,AddressAndAmount,NodeIndexerAPI
+from mnemonic import Mnemonic
+
+
+client = Client(nodes=['https://api.testnet.shimmer.network'])
+mnemo = Mnemonic("english")
 
 
 def limpar_tela():
@@ -21,45 +26,81 @@ def cadastrar_evento():
 
     game = input("Insira o tipo de evento:")
 
-def gerar_hash(cpf: str) -> str:
-    # Criando um hash SHA-256 do CPF
-    hash_object = hashlib.sha256(cpf.encode())
-    return hash_object.hexdigest()
-
-def calcular_saldo(hash):
-    saldo = Ledger.retornar_saldo(hash)
-    return saldo
-
 
 def login():
 
-    cpf = input("insira seu cpf para acessar a plataforma: ")
-    hash = gerar_hash(cpf)
-    senha = input("insira sua senha:")
-
-
-    #fazer mais coisas?
-
-    return (hash,senha)
+    print("1. Login")
+    print("2. Registrar-se\n")
+    option = input()
     
+    try:
+
+        if option == "1":
+
+            private_key = input("Digite sua chave de acesso: ")
+            frase = MnemonicSecretManager(private_key)
+            frase_to_str = str(frase['mnemonic'])
+       
+            validacao = mnemo.check(frase_to_str)
+
+            if validacao:
+                return frase_to_str
+            else:
+                return False
+            
+        elif option == "2": 
+            
+            carteira_aleatoria = comunicacao.generate_private_key()
+            carteira_aleatoria = str(carteira_aleatoria['mnemonic'])
+            private_key_carteira_aleatoria = comunicacao.generate_public_keys(carteira_aleatoria,0,1)
+
+            limpar_tela()
+            print(f'Sua carteira tem a seguinte chave privada: \n\n"{carteira_aleatoria}"')
+            print("\nGuarde a chave. Ela é importante para efetuar operações no sistema")
+            input("\nPressione qualquer tecla para continuar")
+            return carteira_aleatoria
+            
+    
+    except ValueError as e:
+
+        print(e)
+        return False
+
 
 def main():
     '''
     O ledge so armazena transacoes, logo o cliente nao é registrado diretamente; todos os seus dados sao coletados a partir das
     transacoes
 
-
     tem que haver uma forma do cliente inserir uma senha, mas ela nao pode ser guardada no ledge, entao, onde guardar?
     '''
 
-    cliente_hash = login()
+    cliente = login()
+    
+    if cliente:
+        
+        cliente_chave = comunicacao.generate_public_keys(cliente,0,1)
+        
+        if cliente_chave[0]:
+
+            cliente_saldo = comunicacao.check_balance(cliente_chave[0])
+        else:
+            print("Erro ao acessar chave pública")
+            sys.exit()
+
+    else:
+        print("Cliente inválido. Tente novamente!")
+        sys.exit()
+
+
+    convert_reais = comunicacao.shimmer_para_reais(cliente_saldo[0])
     
     limpar_tela()
 
     while True: 
 
         print("="*23)
-        print("|  BET - distribuída  |               saldo atual: liso" )
+        print(f"|  BET - distribuída  |               saldo atual: {cliente_saldo[0]} ({convert_reais:.2f} R$)" )
         print("="*23)
 
         print("\n1. Apostar em um evento")
@@ -72,11 +113,36 @@ def main():
         opcao = input("Escolha uma das opções: ")
 
         if opcao == "1": 
+            
             ''
         elif opcao == "2":
             limpar_tela() 
+            
+            data = {"status": "aberto",
+                    "valor_min_aposta": "xxxx",
+                    "data_criacao":"xxxx",
+                    "data_validade":"xxxx",
+                    "tipo_evento":"xxxx",
+            }
 
-            cadastrar_evento()
+            eventoid = comunicacao.gerar_evento_id(data)
+
+            new_data = {"status": "aberto",
+                    "valor_min_aposta": "xxxx",
+                    "data_criacao":"xxxx",
+                    "data_validade":"xxxx",
+                    "tipo_evento":"xxxx",
+                    "id_evento": eventoid
+            }
+
+
+            blockid = comunicacao.postar_evento_aposta(new_data)
+          
+
+            input()
+            limpar_tela() 
+
+
         elif opcao == "3":
             ''
         elif opcao == "6":
