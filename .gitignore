@@ -1,3 +1,5 @@
 *.tmp
 
 notes.txt
+/my-app-redes/clonewasp
+.env
