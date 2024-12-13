@@ -1,0 +1,68 @@
+<h1>Sobre o projeto</h1>
+<p>Este projeto foi desenvolvido como parte da disciplina MI — Concorrência e Conectividade do curso de Engenharia de Computação da Universidade Estadual de Feira de Santana (UEFS). Ele representa um sistema de apostas distribuído, criado para explorar conceitos de concorrência e conectividade em rede de computadores.</p>
+<div id = "introducao"> 
+  <h1>Introdução</h1>
+  <p> 
+  Este relatório apresenta o desenvolvimento de um sistema de apostas que permite aos clientes realizar e acompanhar eventos de apostas em tempo real, assim como os resultados, de forma transparente e confiável. Para registrar os eventos e as transações subjacentes, é utilizada uma tecnologia de livro-razão (ledger) distribuído, mais especificamente a blockchain da rede Ethereum. Foi desenvolvida uma aplicação cliente que se conecta à rede blockchain e realiza operações por meio de contratos implementados nela, proporcionando ao usuário uma interface interativa e responsiva, conforme as ações solicitadas. Os dados (registro de transações) são armazenados no livro-razão de cada nó da blockchain. O sistema, por ser capaz de se conectar a uma rede real de blockchain, se beneficia dos mecanismos de controle de transações, como o Proof-of-Stake (PoS). Os resultados gerados demonstram que o sistema consegue gerenciar as apostas de forma inteligente e descentralizada, garantindo a imutabilidade e transparência dos dados.
+  </p>
+</div>
+
+<h2>Equipe</h2>
+<uL>
+  <li><a href="https://github.com/DiogoDSJ">Diogo dos Santos de Jesus</a></li>
+  <li><a href="https://github.com/eugabrielbr">Gabriel Silva dos Santos</a></li>
+</ul>
+
+<h2>Tutor</h2>
+<uL>
+  <li>Prof. Me. Antonio Augusto Teixeira Ribeiro Coutinho (UEFS)</li>
+</ul>
+
+<h2>Fundamentação</h2>
+<div id="fundamentacao">
+
+  <h3>Blockchain</h3>
+  <p>A blockchain é uma tecnologia inovadora baseada em uma estrutura de dados descentralizada, que organiza informações em blocos encadeados de maneira sequencial e segura. Cada bloco contém um conjunto de transações, e cada transação registrada é criptografada, garantindo que ela seja protegida contra modificações ou fraudes. A principal característica da blockchain é a sua imutabilidade, ou seja, uma vez que um bloco é adicionado à cadeia, ele não pode ser alterado. Isso é garantido por algoritmos de consenso que validam e verificam as transações antes de sua inclusão, como o Proof of Work (PoW) e o Proof of Stake (PoS). Esses algoritmos asseguram que todos os participantes da rede cheguem a um consenso sobre o estado das transações, sem a necessidade de uma autoridade central.</p>
+  <p>Além da segurança e imutabilidade, a blockchain é descentralizada, o que significa que não existe um único ponto de falha ou controle. A rede é mantida por diversos nós, ou computadores, distribuídos geograficamente, que colaboram para validar e registrar transações de forma transparente. Esse modelo elimina a necessidade de intermediários, reduzindo custos e aumentando a eficiência das transações. Cada participante da rede pode acessar e verificar as transações, garantindo a transparência e a confiança no sistema.</p>
+  <p>No sistema de apostas, a utilização da blockchain oferece diversas vantagens. A principal delas é a transparência, pois todas as apostas, resultados e transações ficam registradas de forma pública e imutável na blockchain, permitindo que qualquer pessoa verifique a integridade dos eventos. Além disso, a descentralização do sistema torna-o mais seguro e resistente a fraudes, pois não depende de uma entidade central para operar. </p>
+  <p>Em vez disso, as apostas são validadas por meio de contratos inteligentes, que garantem que as condições de cada aposta sejam cumpridas automaticamente, sem a necessidade de intervenção humana. A blockchain também assegura a segurança das transações, impedindo alterações nos registros de apostas e garantindo que o processo seja justo e transparente para todos os participantes. Dessa forma, ao usar a blockchain em um sistema de apostas, a confiança dos usuários é aumentada, e a possibilidade de manipulação ou erro é reduzida, proporcionando uma experiência mais confiável e segura.
+</p>
+
+<h3>Redes de teste</h3>
+
+<p>Para o desenvolvimento e teste do sistema de apostas, foram utilizadas duas redes distintas: a rede Sepolia e uma rede local de testes com Hardhat.</p>
+<p>A rede Sepolia é uma rede de teste pública da blockchain Ethereum, que utiliza o mecanismo de consenso Proof of Stake (PoS). Ao utilizar essa rede, o projeto se beneficia da segurança e integridade proporcionadas pelos validadores da rede. Os validadores são responsáveis pela validação das transações e garantem que as apostas sejam registradas corretamente, mantendo a confiança no processo. Além disso, ao operar em uma rede descentralizada, o sistema de apostas pode ser testado em um ambiente mais próximo da rede principal Ethereum, permitindo uma validação mais robusta e confiável dos contratos inteligentes e das transações realizadas, sem envolver valores reais.</p>
+<p>Por outro lado, a rede local de testes com Hardhat foi utilizada para realizar testes rápidos e controlados dentro de um ambiente totalmente controlado. Com ela, o sistema é capaz de criar contas automaticamente, com valores já depositados, permitindo que as apostas sejam realizadas de forma ágil e sem a necessidade de interagir com redes externas. O controle total sobre os saldos e participantes proporciona flexibilidade para testar diversos cenários de apostas e transações em tempo real, sem custos ou complicações. Essa rede local oferece um ambiente ideal para simulações de apostas, onde o comportamento do sistema pode ser ajustado e monitorado com precisão, garantindo a confiança nas operações realizadas no sistema.</p>
+
+<h3>Proof of Stake (PoS)</h3>
+
+<p>A Proof of Stake (PoS) é um mecanismo de consenso utilizado em várias blockchains, incluindo a rede Sepolia, que é uma das redes de teste do Ethereum. Ao contrário do Proof of Work (PoW), que depende de mineração com alta utilização de energia, o PoS oferece uma alternativa mais eficiente e sustentável. Na rede Sepolia, o PoS funciona por meio de validadores, que são responsáveis por validar transações e criar novos blocos, sendo selecionados de acordo com a quantidade de ETH que possuem em staking. Quanto maior a quantidade de ETH que um validador tem em staking, maior é a probabilidade de ser escolhido para propor ou validar um bloco.</p>
+<p>A principal vantagem do PoS está no fato de que ele não exige grande poder computacional, como ocorre no PoW, o que resulta em um consumo de energia muito mais baixo. Além disso, o PoS incentiva a segurança e a descentralização, pois qualquer pessoa com ETH pode se tornar um validador e participar do processo de validação. Em troca da validação de blocos, os validadores recebem recompensas em ETH, que servem como incentivo para garantir o bom funcionamento da rede.</p>
+<p>Quando implementado na rede pública do Ethereum, como a Sepolia, o Proof of Stake oferece uma série de benefícios para o projeto, como uma maior eficiência energética, custos reduzidos e um processo de consenso mais acessível e descentralizado. Esses benefícios são especialmente importantes para a aplicação em um ambiente de blockchain, proporcionando uma rede mais segura, econômica e escalável. O projeto, ao ser executado em uma rede pública como a Sepolia, pode aproveitar essas vantagens do PoS, resultando em uma implementação mais eficiente e sustentável.</p>
+</div>
+
+
+<h2>Metodologia</h2>
+<div id="metodologia">
+
+<h3>Contas</h3>
+
+<p>O sistema utiliza carteiras Ethereum como a carteira padrão para os usuários, permitindo que realizem depósitos e saques da mesma forma que em uma rede Ethereum convencional. Essa integração proporciona uma experiência segura e familiar, aproveitando as vantagens da blockchain, como a transparência e imutabilidade das transações. Um benefício adicional é que o sistema realiza a verificação do saldo da carteira do usuário no momento do login, garantindo que o valor esteja sempre atualizado. Além disso, o sistema converte automaticamente o saldo para reais, oferecendo uma visão clara e acessível do valor disponível para o usuário, facilitando a interação com o sistema.</p>
+<p>O sistema também permite o registro de novas carteiras Ethereum, criando uma experiência completa para o usuário. Ao registrar uma nova carteira, o sistema gera e retorna tanto a chave pública quanto a chave privada, garantindo que o usuário tenha total controle sobre sua carteira. A chave pública é utilizada para receber depósitos, enquanto a chave privada é crucial para a realização de transações e saques, sendo sempre fornecida ao usuário de forma segura. Isso garante que o sistema não apenas suporte a integração com carteiras Ethereum, mas também facilite a criação de novas carteiras de forma simples e segura.</p>
+
+<h3>Contrato</h3>
+
+<p>O contrato inteligente desenvolvido para a rede Ethereum e utilizado no sistema permite que os usuários criem apostas de cara ou coroa, proporcionando uma experiência interativa e segura. Nesse sistema, vários jogadores podem participar da mesma aposta, escolhendo entre "cara" ou "coroa" e depositando um valor no contrato na expectativa de que outros jogadores se juntem. Contudo, o contrato impõe algumas regras que garantem a integridade e o bom funcionamento das apostas.</p>
+<p>Uma dessas regras é que um jogador não pode participar de mais de uma aposta simultaneamente. Isso evita que um jogador acumule apostas em aberto e assegura que ele esteja comprometido com uma única aposta por vez. Além disso, o contrato impede que um jogador aceite sua própria aposta, garantindo que sempre haja um adversário para a disputa. Para criar uma nova aposta, o jogador deve finalizar a aposta anterior, evitando que múltiplas apostas fiquem abertas ao mesmo tempo.</p>
+<p>Outro requisito essencial do contrato é que existe um valor mínimo para cada aposta, e o jogador só pode criar uma aposta ou participar de uma existente se tiver saldo suficiente na carteira para cobrir o valor exigido. O jogador também é obrigado a depositar um valor e escolher seu lado (cara ou coroa) no evento criado antes de concluir sua participação.</p>
+<p>Além disso, cada ação realizada dentro do contrato, seja a criação, aceitação, finalização da aposta ou distribuição dos valores, emite um evento na blockchain. Isso garante que todos os participantes possam acompanhar, em tempo real, o andamento da aposta, desde a sua criação até a finalização e a distribuição dos valores aos vencedores. Dessa forma, o contrato assegura transparência e confiança em cada etapa do processo, proporcionando uma experiência justa e segura para todos os envolvidos.</p>
+
+<h3>Eventos</h3>
+
+<p>O sistema de apostas foi desenvolvido para permitir a criação de eventos de forma interativa e transparente, com a emissão de notificações para todas as ações importantes do processo. Ao criar uma aposta, o jogador criador deixa o evento em aberto, permitindo que até 9 outros jogadores entrem. Essa notificação é emitida em tempo real, garantindo que todos os participantes acompanhem a criação e a disponibilidade para novas entradas.</p>
+<p>Durante o processo, o jogador criador tem a capacidade de encerrar o evento a qualquer momento. Caso o número mínimo de jogadores seja atingido, o evento segue com os participantes registrados e a aposta é finalizada conforme as regras definidas. Se apenas o jogador criador se inscrever, ele poderá encerrar a aposta, e o valor apostado será devolvido automaticamente. Nesse caso, se ele ganhar, receberá o prêmio, mas se não houver vencedores, o dinheiro também é devolvido, sendo contabilizado como "sem ganhadores".</p>
+<p>As ações de criação, aceitação e finalização da aposta geram notificações que são visíveis em tempo real. Isso garante que todas as interações sejam acompanhadas por todos os participantes e observadores, promovendo transparência e uma experiência dinâmica e interativa.</p>
+
+
+</div>
+  
