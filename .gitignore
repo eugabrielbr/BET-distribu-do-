@@ -3,3 +3,19 @@
 notes.txt
 /my-app-redes/clonewasp
 .env
+
+# Hardhat
+/my-app-redes/contratos/artifacts
+/my-app-redes/contratos/cache
+/my-app-redes/contratos/node_modules
+/my-app-redes/contratos/typechain
+/my-app-redes/contratos/typechain-types
+
+# solidity-coverage files
+/my-app-redes/contratos/coverage
+/my-app-redes/contratos/coverage.json
+
+# Hardhat Ignition default folder for deployments against a local node
+/my-app-redes/contratos/ignition/deployments/chain-31337
+
+/my-app-redes/cliente_ethereum/node_modules

@@ -3,12 +3,16 @@ import sys
 from eth_utils import is_address, is_checksum_address
 from web3 import Web3
 from dotenv import load_dotenv
-
+from time import sleep
 import comunicacao
+from web3.middleware import ExtraDataToPOAMiddleware
 
 load_dotenv()
-infura_url = f'https://sepolia.infura.io/v3/{os.getenv("KEY_API")}'
+#infura_url = f'https://sepolia.infura.io/v3/{os.getenv("KEY_API")}'
+infura_url = 'http://localhost:8545'
 w3 = Web3(Web3.HTTPProvider(infura_url))
+w3.middleware_onion.inject(ExtraDataToPOAMiddleware, layer=0)
+endereco_contrato = '0x5fbdb2315678afecb367f032d93f642f64180aa3'
 
 def limpar_tela():
     """Limpa a tela do terminal para uma visualização mais limpa."""
@@ -21,7 +25,13 @@ def cadastrar_evento():
     print("\n1. Cara ou coroa")
     print("2. Número da sorte\n")
 
-    game = input("Insira o tipo de evento:")
+    game = input("Insira o tipo de evento: ")
+
+    if game == "1":
+        
+       ""
+
+
 
 def validate_ethereum_address(address):
     # Verifica se o endereço é válido
@@ -56,6 +66,7 @@ def login():
         elif option == "2": 
             
             account = w3.eth.account.create()
+            
 
             limpar_tela()
             print(f'Sua carteira tem a seguinte chave privada: \n\n"{account._private_key}" e o seguinte endereço "{account._public_key}"')
@@ -69,6 +80,22 @@ def login():
         print(e)
         return False
 
+def menu(ethbalance,brlbalance):
+
+    print("="*23)
+    print(f"|  BET - distribuída  |               saldo atual: {ethbalance:.5f} ETH ({brlbalance:.2f} R$)" )
+    print("="*23)
+
+    print("\n1. Apostar em um evento")
+    print("2. Cadastrar eventos")
+    print("3. Verificar resultados")
+    print("4. Adicionar créditos")
+    print("5. Ver histórico")
+    print("6. Sair\n")
+    
+    opcao = input("Escolha uma das opções: ")
+
+    return opcao
 
 def main():
     '''
@@ -89,33 +116,23 @@ def main():
         print("Cliente inválido. Tente novamente!")
         sys.exit()
 
-
-
     convert_reais = eth_balance * comunicacao.get_eth_to_brl()
     
     limpar_tela()
 
     while True: 
 
-        print("="*23)
-        print(f"|  BET - distribuída  |               saldo atual: {eth_balance} ({convert_reais:.2f} R$)" )
-        print("="*23)
-
-        print("\n1. Apostar em um evento")
-        print("2. Cadastrar eventos")
-        print("3. Verificar resultados")
-        print("4. Adicionar créditos")
-        print("5. Ver histórico")
-        print("6. Sair\n")
+        opcao = menu(eth_balance,convert_reais)
         
-        opcao = input("Escolha uma das opções: ")
-
         if opcao == "1": 
             
-            ''
+            sla = comunicacao.criarAposta(endereco_contrato,'0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80','0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',1)
         elif opcao == "2":
-            ''
+            
+            limpar_tela()
 
+            #sla2 = comunicacao.revert('0xfd7ad7ffd6e8a709ac861a0d9b03867231cee250','3aee31e8c3302e621f1f9e46306038771bf51694cff879b1e4de98d1e5f12d64','0xAeC09227112DA8Be78bcc80931256fb3401d95ff');
+            sla3 = comunicacao.aceitarAposta(endereco_contrato,'0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d','0x70997970C51812dc3A010C7d01b50e0d17dc79C8',2,'0x28da634c4d3567fc4f257584dfb509a57dae900c5d2165badb00c85d4c7ba08a')
 
         elif opcao == "3":
             ''
