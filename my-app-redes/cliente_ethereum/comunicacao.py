@@ -368,7 +368,7 @@ def criarAposta(contractAddress,privateKey,addressFrom,escolha):
     # Assine e envie a transação
     signed_txn = w3.eth.account.sign_transaction(transaction, private_key)
     txn_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
-    print(f"Aposta criada! Transação Hash: {w3.to_hex(txn_hash)}")
+    print(f"Criando aposta. Transação Hash: {w3.to_hex(txn_hash)}")
     print(f"Esperando confimação da transação. Aguarde...")
     confirmarIndexacao(txn_hash)
 
@@ -406,7 +406,7 @@ def aceitarAposta(contractAddress,privateKey,addressFrom,escolha,idAposta):
     # Assine e envie a transação
     signed_txn = w3.eth.account.sign_transaction(transaction, private_key)
     txn_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
-    print(f"Aposta aceita! Transação Hash: {w3.to_hex(txn_hash)}")
+    print(f"Aceitando aposta. Transação Hash: {w3.to_hex(txn_hash)}")
     print(f"Esperando confimação da transação. Aguarde...")
     confirmarIndexacao(txn_hash)
 

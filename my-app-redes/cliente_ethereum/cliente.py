@@ -31,8 +31,6 @@ def cadastrar_evento():
         
        ""
 
-
-
 def validate_ethereum_address(address):
     # Verifica se o endereço é válido
     if not is_address(address):
@@ -54,12 +52,15 @@ def login():
 
         if option == "1":
 
-            public_key = input("Digite seu endereço: ")
-        
+            public_key = input("Digite seu endereço público: ")
+                    
             validacao = w3.is_address(public_key)
 
             if validacao:
-                return public_key
+
+                print("\nPara realizar transações, é necessário informar sua chave privada. Obs: não compartilhe esta chave com ninguem.\n")
+                private_key = input("Digite sua chave privada: ")
+                return (public_key,private_key)
             else:
                 return False
             
@@ -72,7 +73,7 @@ def login():
             print(f'Sua carteira tem a seguinte chave privada: \n\n"{account._private_key}" e o seguinte endereço "{account._public_key}"')
             print("\nGuarde a chave. Ela é importante para efetuar operações no sistema")
             input("\nPressione qualquer tecla para continuar")
-            return account.public_key
+            return (account.public_key,account._private_key)
             
     
     except ValueError as e:
@@ -106,8 +107,12 @@ def main():
     '''
 
     cliente = login()
+   
     
     if cliente:
+
+        cliente_private_key = cliente[1]
+        cliente = cliente[0]
         
         balance = w3.eth.get_balance(cliente)
         eth_balance = w3.from_wei(balance, 'ether')
@@ -126,13 +131,13 @@ def main():
         
         if opcao == "1": 
             
-            sla = comunicacao.criarAposta(endereco_contrato,'0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80','0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',1)
+            sla = comunicacao.criarAposta(endereco_contrato,cliente_private_key,cliente,1)
         elif opcao == "2":
             
             limpar_tela()
 
             #sla2 = comunicacao.revert('0xfd7ad7ffd6e8a709ac861a0d9b03867231cee250','3aee31e8c3302e621f1f9e46306038771bf51694cff879b1e4de98d1e5f12d64','0xAeC09227112DA8Be78bcc80931256fb3401d95ff');
-            sla3 = comunicacao.aceitarAposta(endereco_contrato,'0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d','0x70997970C51812dc3A010C7d01b50e0d17dc79C8',2,'0x28da634c4d3567fc4f257584dfb509a57dae900c5d2165badb00c85d4c7ba08a')
+            sla3 = comunicacao.aceitarAposta(endereco_contrato,cliente_private_key,cliente,2,'0xfb3319551875823edde31a02f5da222f17f0f980f7b63a4c2ee9f65ceb1da133')
 
         elif opcao == "3":
             ''
