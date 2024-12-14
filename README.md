@@ -39,6 +39,15 @@
 <p>A Proof of Stake (PoS) é um mecanismo de consenso utilizado em várias blockchains, incluindo a rede Sepolia, que é uma das redes de teste do Ethereum. Ao contrário do Proof of Work (PoW), que depende de mineração com alta utilização de energia, o PoS oferece uma alternativa mais eficiente e sustentável. Na rede Sepolia, o PoS funciona por meio de validadores, que são responsáveis por validar transações e criar novos blocos, sendo selecionados de acordo com a quantidade de ETH que possuem em staking. Quanto maior a quantidade de ETH que um validador tem em staking, maior é a probabilidade de ser escolhido para propor ou validar um bloco.</p>
 <p>A principal vantagem do PoS está no fato de que ele não exige grande poder computacional, como ocorre no PoW, o que resulta em um consumo de energia muito mais baixo. Além disso, o PoS incentiva a segurança e a descentralização, pois qualquer pessoa com ETH pode se tornar um validador e participar do processo de validação. Em troca da validação de blocos, os validadores recebem recompensas em ETH, que servem como incentivo para garantir o bom funcionamento da rede.</p>
 <p>Quando implementado na rede pública do Ethereum, como a Sepolia, o Proof of Stake oferece uma série de benefícios para o projeto, como uma maior eficiência energética, custos reduzidos e um processo de consenso mais acessível e descentralizado. Esses benefícios são especialmente importantes para a aplicação em um ambiente de blockchain, proporcionando uma rede mais segura, econômica e escalável. O projeto, ao ser executado em uma rede pública como a Sepolia, pode aproveitar essas vantagens do PoS, resultando em uma implementação mais eficiente e sustentável.</p>
+
+<h3>Web3</h3>
+
+<p>
+A biblioteca Web3 é uma ferramenta essencial para a interação com blockchains baseadas na tecnologia Ethereum. Ela fornece uma interface de programação (API) que permite que desenvolvedores criem aplicações descentralizadas (DApps), realizem transações, gerenciem contratos inteligentes e interajam com redes blockchain de forma programática.</p>
+<p>Entre suas principais funcionalidades, destaca-se a capacidade de conectar aplicações a nós da blockchain, sejam eles locais, remotos ou fornecidos por serviços como Infura ou Alchemy. Essa conectividade permite interagir com contratos inteligentes implantados na rede, possibilitando a leitura de dados, a execução de funções e o envio de transações. A Web3 também permite a gestão de contas, como a criação de carteiras digitais, a assinatura de transações e a verificação de assinaturas digitais. Adicionalmente, a biblioteca oferece métodos para acessar informações da blockchain, como saldos de contas, estados de contratos e históricos de transações, proporcionando uma interface prática e eficiente para desenvolvedores.</p>
+<p>O uso da Web3 traz diversos benefícios significativos. Ela abstrai a complexidade inerente ao protocolo Ethereum, simplificando o desenvolvimento e permitindo que os programadores se concentrem nos aspectos inovadores de suas aplicações. Além disso, sua ampla adoção no ecossistema Ethereum garante acesso a uma rica documentação, suporte da comunidade e recursos que aceleram o desenvolvimento. Outro ponto positivo é sua compatibilidade com redes que utilizam a Ethereum Virtual Machine (EVM), como Binance Smart Chain e Polygon, expandindo as possibilidades de integração e aplicação.</p>
+
+
 </div>
 
 
@@ -63,6 +72,33 @@
 <p>Durante o processo, o jogador criador tem a capacidade de encerrar o evento a qualquer momento. Caso o número mínimo de jogadores seja atingido, o evento segue com os participantes registrados e a aposta é finalizada conforme as regras definidas. Se apenas o jogador criador se inscrever, ele poderá encerrar a aposta, e o valor apostado será devolvido automaticamente. Nesse caso, se ele ganhar, receberá o prêmio, mas se não houver vencedores, o dinheiro também é devolvido, sendo contabilizado como "sem ganhadores".</p>
 <p>As ações de criação, aceitação e finalização da aposta geram notificações que são visíveis em tempo real. Isso garante que todas as interações sejam acompanhadas por todos os participantes e observadores, promovendo transparência e uma experiência dinâmica e interativa.</p>
 
+<h3>Apostas</h3>
+
+<p>O sistema de apostas funciona da seguinte forma: um jogador pode criar uma aposta especificando um valor em Ether e sua escolha (cara ou coroa). Essa transação é enviada para o contrato inteligente, que armazena as informações da aposta e emite o evento "ApostaCriada". Outro jogador pode, então, aceitar essa aposta, também enviando o mesmo valor em Ether e selecionando sua escolha. O contrato inteligente, ao receber a aceitação, emite o evento "ApostaAceita", confirmando a entrada do segundo jogador na aposta.</p>
+
+<p>Após a aceitação, o jogo pode ser finalizado. Isso é feito por meio da função resolverJogo, que determina o vencedor com base em uma lógica definida no contrato. O vencedor recebe o prêmio total, e o evento "JogoFinalizado" é emitido com os detalhes da aposta, o vencedor e o valor do prêmio. Em caso de necessidade, há também a possibilidade de reverter estados utilizando a função revert, que pode corrigir inconsistências no contrato.</p>
+
+<h3>Simulação</h3>
+
+<p>O código é capaz de simular eventos em tempo real devido à sua abordagem de escuta contínua de eventos na blockchain. Ele utiliza filtros de eventos do contrato inteligente, como ApostaCriada, ApostaAceita, e JogoFinalizado, que monitoram novos eventos conforme eles ocorrem. Essa técnica permite que o código capture instantaneamente as transações e mudanças de estado dentro do contrato inteligente.</p>
+
+<p>Além disso, o uso de uma thread dedicada para a escuta de eventos garante que o processo de escuta e processamento ocorra paralelamente ao script principal. Isso significa que, mesmo enquanto o resto do programa está executando outras tarefas ou aguardando por entrada do usuário, ele ainda pode detectar e processar eventos na blockchain em tempo real.</p>
+
+<p>Por fim, a função get_new_entries() é crucial para a simulação em tempo real, pois permite ao código verificar continuamente por novos eventos, garantindo que mudanças e atualizações no contrato inteligente sejam refletidas instantaneamente no sistema simulado. Essa capacidade de responder a mudanças em tempo real é fundamental para a simulação realista de um sistema baseado em blockchain.</p>
+
+<h3>Odds</h3>
+
+
+
+<h3>Contabilidade</h3>
+
+<p>Cada ação no sistema, como a criação de uma aposta ou a resolução de um jogo, é registrada e emitida como um evento. Isso garante que todos os participantes estejam cientes das transações ocorrendo e das alterações nos saldos. Os eventos também servem para comunicar diretamente mudanças de estado no contrato inteligente, como a finalização de uma aposta ou a distribuição de prêmios, facilitando a auditoria e o controle das transações.</p>
+
+<p>Além disso, a validação de endereços e as verificações de segurança incorporadas ao sistema ajudam a prevenir transações fraudulentas. A função de validar endereços verifica se o endereço público do usuário é válido e, opcionalmente, se ele está no formato de checksum. Essas verificações ajudam a garantir que apenas endereços legítimos possam interagir com o contrato, aumentando a integridade das transações.</p>
+
+<p>A implementação das funções criarAposta e resolverJogo também é crucial para garantir a integridade do sistema. Elas utilizam o contrato inteligente para efetuar transações de criação e resolução de apostas, o que significa que todas as interações com o blockchain são realizadas de forma segura. As funções constroem e assinam transações corretamente, o que impede que transações fraudulentas ou mal-formadas sejam executadas. Isso é particularmente importante para a criação de apostas, onde o saldo do jogador é bloqueado no contrato inteligente, e para a resolução de jogos, onde os prêmios são distribuídos de acordo com os resultados calculados.</p>
+
+<h3>Publicação</h3>
 
 </div>
   
