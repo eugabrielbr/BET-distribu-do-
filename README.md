@@ -102,3 +102,7 @@ A biblioteca Web3 é uma ferramenta essencial para a interação com blockchains
 
 </div>
   
+<h2>Conclusão</h2>
+<div id="conclusao">
+
+<p>O projeto de sistema de apostas distribuído desenvolvido dentro da disciplina MI — Concorrência e Conectividade do curso de Engenharia de Computação da Universidade Estadual de Feira de Santana (UEFS) implementou todos os requisitos e funcionalidades solicitados. O sistema utiliza a tecnologia de blockchain, especificamente a rede Ethereum, para garantir a transparência, segurança e imutabilidade das transações. A implementação de contratos inteligentes permite que todas as apostas e transações sejam registradas automaticamente na blockchain, proporcionando uma experiência justa e transparente para os usuários. Além disso, o uso do Proof of Stake (PoS) na rede Sepolia oferece eficiência energética e redução de custos, enquanto a biblioteca Web3 facilita a interação programática com a blockchain. A capacidade do sistema em simular eventos em tempo real através de filtros de eventos e a escuta contínua dos mesmos assegura que todos os participantes possam acompanhar os resultados e mudanças nas apostas em tempo real.</p>
