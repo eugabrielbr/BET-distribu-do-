@@ -12,6 +12,7 @@ contract CaraOuCoroa {
         Escolha[] escolhas;
         address[] jogadores;
         StatusJogo statusJogo;
+        uint256 dataLimite;  
     }
      
 
@@ -19,7 +20,7 @@ contract CaraOuCoroa {
     mapping(address => bytes32) public apostasPorJogador;
 
     // Eventos
-    event ApostaCriada(bytes32 apostaId, address jogador1, uint256 valorAposta,Escolha escolha);
+    event ApostaCriada(bytes32 apostaId, address jogador1, uint256 valorAposta,Escolha escolha, uint256 dataLimite);
     event ApostaParticipante(bytes32 apostaId, address jogador, Escolha escolha);
     event JogoFinalizado(bytes32 apostaId, uint256 valorPremio, address[] vencedores,Escolha resultado);
     event ApostaEncerrada(bytes32 apostaId);
@@ -45,7 +46,7 @@ contract CaraOuCoroa {
     }
 
     // Criar uma nova aposta
-    function criarAposta(Escolha _escolha) public payable semApostaAtiva(msg.sender) {
+    function criarAposta(Escolha _escolha,uint256 _dataLimite) public payable semApostaAtiva(msg.sender) {
         require(msg.value >= 0.001 ether, "Aposta minima e 0.001 ETH");
 
         bytes32 apostaId = keccak256(abi.encodePacked(msg.sender, block.timestamp));
@@ -54,6 +55,7 @@ contract CaraOuCoroa {
         aposta.jogador1 = msg.sender;
         aposta.valorAposta = msg.value;
         aposta.statusJogo = StatusJogo.ESPERANDO_JOGADORES;
+        aposta.dataLimite = _dataLimite;
 
 
         apostas[apostaId].escolhas.push(_escolha);
@@ -61,7 +63,7 @@ contract CaraOuCoroa {
 
         apostasPorJogador[msg.sender] = apostaId;
 
-        emit ApostaCriada(apostaId, msg.sender, msg.value,_escolha);
+        emit ApostaCriada(apostaId, msg.sender, msg.value,_escolha,_dataLimite);
     }
 
     // Participar de uma aposta
@@ -70,19 +72,35 @@ contract CaraOuCoroa {
 
         require(aposta.jogadores.length < 3, "Limite de 10 jogadores atingido");
         require(msg.value == aposta.valorAposta, "O valor da aposta deve ser o mesmo do criador");
-
-        aposta.jogadores.push(msg.sender);
-        aposta.escolhas.push(_escolha);
-        apostasPorJogador[msg.sender] = apostaId;
-
-        emit ApostaParticipante(apostaId, msg.sender, _escolha);
-
-        // Se 10 jogadores participaram, o jogo é finalizado
-        if (aposta.jogadores.length == 3) {
+        
+        if (block.timestamp > aposta.dataLimite){
             aposta.statusJogo = StatusJogo.FINALIZADO;
+            
+            address payable jogador = payable(msg.sender);
+            jogador.transfer(aposta.valorAposta);
+            
             resolverJogo(apostaId);
+            
+
+        }else{
+
+            aposta.jogadores.push(msg.sender);
+            aposta.escolhas.push(_escolha);
+            apostasPorJogador[msg.sender] = apostaId;
+
+            emit ApostaParticipante(apostaId, msg.sender, _escolha);
+
+            // Se 10 jogadores participaram, o jogo é finalizado
+            if (aposta.jogadores.length == 3) {
+                aposta.statusJogo = StatusJogo.FINALIZADO;
+                resolverJogo(apostaId);
+            }
         }
+
     }
+    
+        
+    
 
     // Resolver o jogo
     function resolverJogo(bytes32 apostaId) public apostaExistente(apostaId) jogoFinalizado(apostaId) {

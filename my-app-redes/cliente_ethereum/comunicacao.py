@@ -37,6 +37,12 @@ abi_cara_ou_coroa = [
           "internalType": "enum CaraOuCoroa.Escolha",
           "name": "escolha",
           "type": "uint8"
+        },
+        {
+          "indexed": False,
+          "internalType": "uint256",
+          "name": "dataLimite",
+          "type": "uint256"
         }
       ],
       "name": "ApostaCriada",
@@ -135,6 +141,11 @@ abi_cara_ou_coroa = [
           "internalType": "enum CaraOuCoroa.StatusJogo",
           "name": "statusJogo",
           "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dataLimite",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -165,6 +176,11 @@ abi_cara_ou_coroa = [
           "internalType": "enum CaraOuCoroa.Escolha",
           "name": "_escolha",
           "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_dataLimite",
+          "type": "uint256"
         }
       ],
       "name": "criarAposta",
@@ -247,7 +263,7 @@ def test_contract(): #verificando se há contrato ativo
     web3 = Web3(Web3.HTTPProvider(infura_url))
 
     # Endereço do contrato
-    contract_address = '0xAfEFFB6149EA6b400aDC1aF696B8c86743AA5734'
+    contract_address = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
 
     # Verificar se o contrato existe (se o código foi implantado na rede)
     contract_code = web3.eth.get_code(contract_address)
@@ -347,7 +363,7 @@ def testeTransfer(addressOrigem,addressDestino,contractAddress,privateKey):
     print(receipt)
 
 
-def criarAposta(contractAddress,privateKey,addressFrom,escolha,valor_aposta):
+def criarAposta(contractAddress,privateKey,addressFrom,escolha,valor_aposta,data):
 
     address = w3.to_checksum_address(contractAddress)
     contract_abi = abi_cara_ou_coroa
@@ -360,14 +376,15 @@ def criarAposta(contractAddress,privateKey,addressFrom,escolha,valor_aposta):
     private_key = privateKey
     from_account = addressFrom
 
-    gas_estimate = contract.functions.criarAposta(escolha).estimate_gas({
+    gas_estimate = contract.functions.criarAposta(escolha,data).estimate_gas({
     "from": from_account,
     "escolha": escolha,
+    "dataaa": data,
     "value": w3.to_wei(valor_aposta, "ether")
 })
 
     # Criar Aposta - Jogador 1
-    transaction = contract.functions.criarAposta(escolha).build_transaction({
+    transaction = contract.functions.criarAposta(escolha,data).build_transaction({
         "from": from_account,
         "value": w3.to_wei(valor_aposta, "ether"),
         "gas": gas_estimate,

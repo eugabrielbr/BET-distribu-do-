@@ -13,6 +13,8 @@ dic_historico_aposta_participantes = {}
 list_finalizados = [] 
 type = None
 import signal
+from datetime import datetime, timedelta
+import pytz
 
 
 def signal_handler(sig, frame):
@@ -49,6 +51,12 @@ contract_abi = [
           "internalType": "enum CaraOuCoroa.Escolha",
           "name": "escolha",
           "type": "uint8"
+        },
+        {
+          "indexed": False,
+          "internalType": "uint256",
+          "name": "dataLimite",
+          "type": "uint256"
         }
       ],
       "name": "ApostaCriada",
@@ -147,6 +155,11 @@ contract_abi = [
           "internalType": "enum CaraOuCoroa.StatusJogo",
           "name": "statusJogo",
           "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dataLimite",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -177,6 +190,11 @@ contract_abi = [
           "internalType": "enum CaraOuCoroa.Escolha",
           "name": "_escolha",
           "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_dataLimite",
+          "type": "uint256"
         }
       ],
       "name": "criarAposta",
@@ -229,7 +247,7 @@ contract_abi = [
       "type": "function"
     }
   ]  # ABI do contrato em formato JSON
-contract_address = "0x5FbDB2315678afecb367f032d93F642f64180aa3"  # Endereço do contrato
+contract_address = "0x0165878A594ca255338adfa4d48449f69242Eb8F"  # Endereço do contrato
 
 # Criando uma instância do contrato
 contract = w3.eth.contract(address=contract_address, abi=contract_abi)
@@ -241,14 +259,25 @@ def handle_aposta_criada(event):
     jogador1 = event.args.jogador1
     valor_aposta =  event.args.valorAposta
     escolha = event.args.escolha
+    data = event.args.dataLimite
+
+    # Converter para o fuso horário de Brasília usando pytz
+    brasilia_tz = pytz.timezone("America/Sao_Paulo")
+    data_hora_utc = datetime.utcfromtimestamp(data)
+    data_hora_brasilia = data_hora_utc.astimezone(brasilia_tz)
+    data_hora_utc = pytz.utc.localize(data_hora_utc)
+    data_hora_brasilia = data_hora_utc - timedelta(hours=3)
+
+# Formatando a data para exibição
+    data_formatada = data_hora_brasilia.strftime('%d/%m/%Y %H:%M')
     
     dic_historico_aposta_criada.setdefault(aposta_id, "")
     
     if dic_historico_aposta_criada[aposta_id] == "":
-      dic_historico_aposta_criada[aposta_id] = f"Aposta Criada! ID da aposta: {aposta_id}, Jogador 1: {jogador1}, Valor da aposta: {valor_aposta}, Escolha: {escolha}"
+      dic_historico_aposta_criada[aposta_id] = f"Aposta Criada! ID da aposta: {aposta_id}, Jogador 1: {jogador1}, Valor da aposta: {valor_aposta}, Escolha: {escolha}, Data limite: {data_formatada}"
       
     if (aposta_id not in list_finalizados) and (type == 0 or type == 1 or type == -1):
-      print(f"Aposta Criada! ID da aposta: {aposta_id}, Jogador 1: {jogador1}, Valor da aposta: {valor_aposta}, Escolha: {escolha}")
+      print(f"Aposta Criada! ID da aposta: {aposta_id}, Jogador 1: {jogador1}, Valor da aposta: {valor_aposta}, Escolha: {escolha}, Data limite: {data_formatada}")
 
 # Função para tratar o evento ApostaParticipante
 def handle_aposta_participante(event):

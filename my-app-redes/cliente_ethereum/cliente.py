@@ -9,13 +9,15 @@ from web3.middleware import ExtraDataToPOAMiddleware
 from eventos import ouvir_eventos,sair_func,getHistorico
 import threading
 import queue
+from datetime import datetime
+import re
 
 load_dotenv()
 #infura_url = f'https://sepolia.infura.io/v3/{os.getenv("KEY_API")}'
 infura_url = 'http://localhost:8545'
 w3 = Web3(Web3.HTTPProvider(infura_url))
 w3.middleware_onion.inject(ExtraDataToPOAMiddleware, layer=0)
-endereco_contrato = '0x5FbDB2315678afecb367f032d93F642f64180aa3' 
+endereco_contrato = '0x0165878A594ca255338adfa4d48449f69242Eb8F' 
 def limpar_tela():
     """Limpa a tela do terminal para uma visualização mais limpa."""
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -100,6 +102,8 @@ def menu(ethbalance,brlbalance):
 
     return opcao
 
+
+
 def main():
     '''
     O ledge so armazena transacoes, logo o cliente nao é registrado diretamente; todos os seus dados sao coletados a partir das
@@ -137,7 +141,16 @@ def main():
             print("No momento, apenas o jogo CARA ou COROA esta disponível!\n")
             valorAposta = float(input("Insira o valor da aposta (ETH): "))
             caraOuCoroa = int(input("Escolha CARA (1) ou COROA(2): "))
-            sla = comunicacao.criarAposta(endereco_contrato,cliente_private_key,cliente,caraOuCoroa,valorAposta)
+            dia = int(input("Insira o dia: "))
+            mes = int(input("Insira o mes: "))
+            ano = int(input("Insira o ano: "))
+            hora = int(input("Insira a hora: "))
+            minutos = int(input("Insira os minutos: "))
+            
+            data_limite = datetime(ano,mes,dia,hora,minutos,0)
+            timestamp_limite = int(data_limite.timestamp())
+            
+            sla = comunicacao.criarAposta(endereco_contrato,cliente_private_key,cliente,caraOuCoroa,valorAposta,timestamp_limite)
         
         elif opcao == "2":
             
@@ -182,6 +195,7 @@ def main():
             event_ouvir_thread2.daemon = True  # Para que a thread termine quando o programa principal terminar
             event_ouvir_thread2.start()
             sleep(2)
+            lista_anti_repeticao = []
             
             listaHistorico = getHistorico(idAposta);
             
@@ -191,7 +205,9 @@ def main():
                     
                     if isinstance(i, list):
                         for j in i:
-                            print(j[1],"\n")
+                            if j[0] not in lista_anti_repeticao:  
+                                print(j[1],"\n")
+                            lista_anti_repeticao.append(j[0])
                     else:
                         print(i,"\n")
                         

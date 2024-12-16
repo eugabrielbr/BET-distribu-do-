@@ -17,8 +17,8 @@
       console.log("Evento ApostaCriada disparado!");
       //console.log("Argumentos:", args); // Mostra todos os argumentos
       // Para um formato mais legível
-      const [apostaId, jogador1, valorAposta, escolha] = args;
-      console.log(`Aposta Criada! ID da aposta: ${apostaId}, Jogador 1: ${jogador1}, Valor da aposta: ${valorAposta}, Escolha: ${escolha}`);
+      const [apostaId, jogador1, valorAposta, escolha,dataLimite] = args;
+      console.log(`Aposta Criada! ID da aposta: ${apostaId}, Jogador 1: ${jogador1}, Valor da aposta: ${valorAposta}, Escolha: ${escolha}, Data: ${dataLimite}`);
     });
   
     // Listener para o evento ApostaParticipante
