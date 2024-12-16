@@ -10,26 +10,7 @@ from dotenv import load_dotenv
 import os 
 
 
-abi_cara_ou_coroa =  [
-    {
-      "anonymous": False,
-      "inputs": [
-        {
-          "indexed": False,
-          "internalType": "bytes32",
-          "name": "apostaId",
-          "type": "bytes32"
-        },
-        {
-          "indexed": False,
-          "internalType": "address",
-          "name": "jogador2",
-          "type": "address"
-        }
-      ],
-      "name": "ApostaAceita",
-      "type": "event"
-    },
+abi_cara_ou_coroa = [
     {
       "anonymous": False,
       "inputs": [
@@ -69,40 +50,66 @@ abi_cara_ou_coroa =  [
           "internalType": "bytes32",
           "name": "apostaId",
           "type": "bytes32"
+        }
+      ],
+      "name": "ApostaEncerrada",
+      "type": "event"
+    },
+    {
+      "anonymous": False,
+      "inputs": [
+        {
+          "indexed": False,
+          "internalType": "bytes32",
+          "name": "apostaId",
+          "type": "bytes32"
         },
         {
           "indexed": False,
           "internalType": "address",
-          "name": "vencedor",
+          "name": "jogador",
           "type": "address"
+        },
+        {
+          "indexed": False,
+          "internalType": "enum CaraOuCoroa.Escolha",
+          "name": "escolha",
+          "type": "uint8"
+        }
+      ],
+      "name": "ApostaParticipante",
+      "type": "event"
+    },
+    {
+      "anonymous": False,
+      "inputs": [
+        {
+          "indexed": False,
+          "internalType": "bytes32",
+          "name": "apostaId",
+          "type": "bytes32"
         },
         {
           "indexed": False,
           "internalType": "uint256",
           "name": "valorPremio",
           "type": "uint256"
+        },
+        {
+          "indexed": False,
+          "internalType": "address[]",
+          "name": "vencedores",
+          "type": "address[]"
+        },
+        {
+          "indexed": False,
+          "internalType": "enum CaraOuCoroa.Escolha",
+          "name": "resultado",
+          "type": "uint8"
         }
       ],
       "name": "JogoFinalizado",
       "type": "event"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "apostaId",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "enum CaraOuCoroa.Escolha",
-          "name": "_escolha",
-          "type": "uint8"
-        }
-      ],
-      "name": "aceitarAposta",
-      "outputs": [],
-      "stateMutability": "payable",
-      "type": "function"
     },
     {
       "inputs": [
@@ -120,24 +127,9 @@ abi_cara_ou_coroa =  [
           "type": "address"
         },
         {
-          "internalType": "address",
-          "name": "jogador2",
-          "type": "address"
-        },
-        {
           "internalType": "uint256",
           "name": "valorAposta",
           "type": "uint256"
-        },
-        {
-          "internalType": "enum CaraOuCoroa.Escolha",
-          "name": "escolhaJogador1",
-          "type": "uint8"
-        },
-        {
-          "internalType": "enum CaraOuCoroa.Escolha",
-          "name": "escolhaJogador2",
-          "type": "uint8"
         },
         {
           "internalType": "enum CaraOuCoroa.StatusJogo",
@@ -188,9 +180,40 @@ abi_cara_ou_coroa =  [
           "type": "bytes32"
         }
       ],
-      "name": "resolverJogo",
+      "name": "encerrarAposta",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "apostaId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "enum CaraOuCoroa.Escolha",
+          "name": "_escolha",
+          "type": "uint8"
+        }
+      ],
+      "name": "participarAposta",
       "outputs": [],
       "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "apostaId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "resolverJogo",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     }
   ]
@@ -206,18 +229,6 @@ def get_eth_to_brl():
     data = response.json()
     return data['ethereum']['brl']
 
-
-def postar_evento_aposta(evento):
-    ''
-    
-
-def participar_evento_aposta(carteira_participante, valor_apostado, aposta):
-    '' 
-
-
-
-def encerrar_evento(quantidade_participantes, lista_carteira_ganhadores, lista_carteira_perdedores, id_evento): #postar uma nova mensagem na rede informando que o evento fechou
-    ''
 
 
 def gerar_evento_id(infos):
@@ -336,9 +347,8 @@ def testeTransfer(addressOrigem,addressDestino,contractAddress,privateKey):
     print(receipt)
 
 
-def criarAposta(contractAddress,privateKey,addressFrom,escolha):
+def criarAposta(contractAddress,privateKey,addressFrom,escolha,valor_aposta):
 
-    valor_aposta = 0.002
     address = w3.to_checksum_address(contractAddress)
     contract_abi = abi_cara_ou_coroa
     addressFrom = w3.to_checksum_address(addressFrom)
@@ -369,13 +379,14 @@ def criarAposta(contractAddress,privateKey,addressFrom,escolha):
     signed_txn = w3.eth.account.sign_transaction(transaction, private_key)
     txn_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
     print(f"Criando aposta. Transação Hash: {w3.to_hex(txn_hash)}")
+   
     print(f"Esperando confimação da transação. Aguarde...")
     confirmarIndexacao(txn_hash)
 
 
-def aceitarAposta(contractAddress,privateKey,addressFrom,escolha,idAposta): 
+def aceitarAposta(contractAddress,privateKey,addressFrom,escolha,idAposta,valor_aposta): 
     
-    valor_aposta = 0.002
+  
     address = w3.to_checksum_address(contractAddress)
     contract_abi = abi_cara_ou_coroa
 
@@ -388,14 +399,14 @@ def aceitarAposta(contractAddress,privateKey,addressFrom,escolha,idAposta):
     private_key = privateKey
     from_account = addressFrom
 
-    gas_estimate = contract.functions.aceitarAposta(idAposta,escolha).estimate_gas({
+    gas_estimate = contract.functions.participarAposta(idAposta,escolha).estimate_gas({
     "from": from_account,
     "escolha": escolha,
     "idAposta": idAposta,
     "value": w3.to_wei(valor_aposta, "ether")
  })
 
-    transaction = contract.functions.aceitarAposta(idAposta,escolha).build_transaction({
+    transaction = contract.functions.participarAposta(idAposta,escolha).build_transaction({
         "from": from_account,
         "value": w3.to_wei(valor_aposta, "ether"),
         "gas": gas_estimate,
@@ -443,32 +454,66 @@ def revert(contractAddress,privateKey,addressFrom):
 
     signed_txn = w3.eth.account.sign_transaction(transaction, private_key)
     txn_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
-    print(f"Aposta revertida! Transação Hash: {w3.to_hex(txn_hash)}")
+    print(f"Revertendo apostas! Transação Hash: {w3.to_hex(txn_hash)}")
 
 
 
 def confirmarIndexacao(tx_hash):
 
-	cont = 0
-	tx_receipt = None
-		
-	while cont <= 20 :
-	# Tenta obter o recibo da transação
-		try:
-				
-			tx_receipt = w3.eth.get_transaction_receipt(tx_hash)
-        
-		except:
-			""
+    cont = 0
+    tx_receipt = None
+      
+    while cont <= 20 :
+    # Tenta obter o recibo da transação
+      try:
+          
+        tx_receipt = w3.eth.get_transaction_receipt(tx_hash)
+          
+      except:
+        ""
+      
+
+      if tx_receipt is not None:
+        print("\nTransação confirmada!")
+        print(f"Bloco: {tx_receipt['blockNumber']}\n")
+        return tx_receipt
+
+      # Aguardar antes de tentar novamente
+      cont += 1
+      sleep(15)
+
+    print("Houve algum erro, tente novamente mais tarde")
+
+
+def encerrarAposta(contractAddress,privateKey,addressFrom,idAposta):
+    
+
+    address = w3.to_checksum_address(contractAddress)
+    contract_abi = abi_cara_ou_coroa
+
+    addressFrom = w3.to_checksum_address(addressFrom)
+
+    # Crie o objeto do contrato
+    contract = w3.eth.contract(address=address, abi=contract_abi)
+
+    # Defina a chave privada do jogador
+    private_key = privateKey
+    from_account = addressFrom
      
-
-		if tx_receipt is not None:
-			print("\nTransação confirmada!")
-			print(f"Bloco: {tx_receipt['blockNumber']}\n")
-			return tx_receipt
-
-		# Aguardar antes de tentar novamente
-		cont += 1
-		sleep(15)
-
-	print("Houve algum erro, tente novamente mais tarde")
+    gas_estimate = contract.functions.encerrarAposta(idAposta).estimate_gas({
+    "from": from_account,
+    "idAposta": idAposta,
+  })
+    
+    transaction = contract.functions.encerrarAposta(idAposta).build_transaction({
+        "from": from_account,
+        "gas": gas_estimate,
+        "gasPrice": w3.eth.gas_price,
+        "nonce": w3.eth.get_transaction_count(from_account),
+    })
+    
+    signed_txn = w3.eth.account.sign_transaction(transaction, private_key)
+    txn_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
+    print(f"Encerrando aposta! Transação Hash: {w3.to_hex(txn_hash)}")
+    confirmarIndexacao(txn_hash)
+    

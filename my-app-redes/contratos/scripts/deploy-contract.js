@@ -21,23 +21,33 @@
       console.log(`Aposta Criada! ID da aposta: ${apostaId}, Jogador 1: ${jogador1}, Valor da aposta: ${valorAposta}, Escolha: ${escolha}`);
     });
   
-    // Listener para o evento ApostaAceita
-    contrato.on("ApostaAceita", (...args) => {
-      console.log("Evento ApostaAceita disparado!");
-      //console.log("Argumentos:", args); // Mostra todos os argumentos
-      // Para um formato mais legível
-      const [apostaId, jogador2] = args;
-      console.log(`Aposta Aceita! ID da aposta: ${apostaId}, Jogador 2: ${jogador2}`);
-    });
+    // Listener para o evento ApostaParticipante
+    contrato.on("ApostaParticipante", (...args) => {
+      console.log("Evento ApostaParticipante disparado!");
+  
+        // Para um formato mais legível
+        const [apostaId, jogador, escolha] = args;
+        console.log(`Aposta registrada! ID da aposta: ${apostaId}, Jogador: ${jogador}, Escolha: ${escolha}`);
+      });
   
     // Listener para o evento JogoFinalizado
     contrato.on("JogoFinalizado", (...args) => {
       console.log("Evento JogoFinalizado disparado!");
       //console.log("Argumentos:", args); // Mostra todos os argumentos
       // Para um formato mais legível
-      const [apostaId, vencedor, valorPremio] = args;
-      console.log(`Jogo Finalizado! ID da aposta: ${apostaId}, Vencedor: ${vencedor}, Valor do prêmio: ${valorPremio}`);
+      const [apostaId, valorPremio, vencedores,resultado] = args;
+      console.log(`Jogo Finalizado! ID da aposta: ${apostaId}, Valor do prêmio:: ${valorPremio}, Vencedores: ${vencedores}, Resultado${resultado} (1 = CARA, 2 = COROA)`);
     });
+
+    // Listener para o evento JogoFinalizado
+    contrato.on("ApostaEncerrada", (...args) => {
+      console.log("Evento ApostaEncerrada disparado!");
+      //console.log("Argumentos:", args); // Mostra todos os argumentos
+      // Para um formato mais legível
+      const [apostaId] = args;
+      console.log(`Aposta encerrada! ID da aposta: ${apostaId}`);
+    });
+  
   
     console.log("Ouvindo eventos...");
   

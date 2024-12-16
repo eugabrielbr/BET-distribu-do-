@@ -6,14 +6,16 @@ from dotenv import load_dotenv
 from time import sleep
 import comunicacao
 from web3.middleware import ExtraDataToPOAMiddleware
+from eventos import ouvir_eventos,sair_func,getHistorico
+import threading
+import queue
 
 load_dotenv()
 #infura_url = f'https://sepolia.infura.io/v3/{os.getenv("KEY_API")}'
 infura_url = 'http://localhost:8545'
 w3 = Web3(Web3.HTTPProvider(infura_url))
 w3.middleware_onion.inject(ExtraDataToPOAMiddleware, layer=0)
-endereco_contrato = '0x5fbdb2315678afecb367f032d93f642f64180aa3'
-
+endereco_contrato = '0x5FbDB2315678afecb367f032d93F642f64180aa3' 
 def limpar_tela():
     """Limpa a tela do terminal para uma visualização mais limpa."""
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -87,11 +89,11 @@ def menu(ethbalance,brlbalance):
     print(f"|  BET - distribuída  |               saldo atual: {ethbalance:.5f} ETH ({brlbalance:.2f} R$)" )
     print("="*23)
 
-    print("\n1. Apostar em um evento")
-    print("2. Cadastrar eventos")
-    print("3. Verificar resultados")
-    print("4. Adicionar créditos")
-    print("5. Ver histórico")
+    print("\n1. Cadastrar eventos")
+    print("2. Apostar em um evento")
+    print("3. Encerrar evento")
+    print("4. Ver eventos disponíveis")
+    print("5. Ver histórico de uma aposta")
     print("6. Sair\n")
     
     opcao = input("Escolha uma das opções: ")
@@ -131,19 +133,83 @@ def main():
         
         if opcao == "1": 
             
-            sla = comunicacao.criarAposta(endereco_contrato,cliente_private_key,cliente,1)
+            limpar_tela()
+            print("No momento, apenas o jogo CARA ou COROA esta disponível!\n")
+            valorAposta = float(input("Insira o valor da aposta (ETH): "))
+            caraOuCoroa = int(input("Escolha CARA (1) ou COROA(2): "))
+            sla = comunicacao.criarAposta(endereco_contrato,cliente_private_key,cliente,caraOuCoroa,valorAposta)
+        
         elif opcao == "2":
             
             limpar_tela()
-
-            #sla2 = comunicacao.revert('0xfd7ad7ffd6e8a709ac861a0d9b03867231cee250','3aee31e8c3302e621f1f9e46306038771bf51694cff879b1e4de98d1e5f12d64','0xAeC09227112DA8Be78bcc80931256fb3401d95ff');
-            sla3 = comunicacao.aceitarAposta(endereco_contrato,cliente_private_key,cliente,2,'0xfb3319551875823edde31a02f5da222f17f0f980f7b63a4c2ee9f65ceb1da133')
+            idAposta = input("Insira o ID do evento que deseja participar: ")
+            caraOuCoroa = int(input("Escolha CARA (1) ou COROA(2): "))
+            print("Para confirmar, digite o valor exigido na aposta.\nObs.: valores diferentes resultaram no cancelamento da aposta")
+            valorAposta = input("\n")
+            sla3 = comunicacao.aceitarAposta(endereco_contrato,cliente_private_key,cliente,caraOuCoroa,idAposta,valorAposta)
 
         elif opcao == "3":
-            ''
+            limpar_tela()
+            idAposta = input("Insira o ID do evento que deseja encerrar: ")
+            sla4 = comunicacao.encerrarAposta(endereco_contrato,cliente_private_key,cliente,idAposta) #fazer esse aq
+            
+        elif opcao == "4":
+            limpar_tela()
+            # essa opcao e eficiente apenas em rede local, na rede publica vale mais a pena criar listas de registro no contrato
+            
+            event_ouvir_thread = threading.Thread(target=ouvir_eventos, args=(-1,))
+            event_ouvir_thread.daemon = True  # Para que a thread termine quando o programa principal terminar
+            event_ouvir_thread.start()
+            event_ouvir_thread.join()
+            
+            # parametros args
+            # 0 = todos os eventos, mas nao printa nada
+            # 1 = ApostaCriada
+            # 2 = ApostaParticipante
+            # 3 = JogoFinalizado
+            # 4 = ApostaEncerrada
+            # -1 = todos os eventos mas so printa eventos disponiveis
+            # -2 = todos os eventos mas nao printa nada
+            
+            limpar_tela()
+        
+        elif opcao == "5":
+            limpar_tela()
+            
+            idAposta = input("Insira o ID do evento que deseja ver o historico: ")
+            resultado_queue = queue.Queue()
+            event_ouvir_thread2 = threading.Thread(target=ouvir_eventos, args=(-2,))
+            event_ouvir_thread2.daemon = True  # Para que a thread termine quando o programa principal terminar
+            event_ouvir_thread2.start()
+            sleep(2)
+            
+            listaHistorico = getHistorico(idAposta);
+            
+            if listaHistorico != []:
+                
+                for i in listaHistorico:
+                    
+                    if isinstance(i, list):
+                        for j in i:
+                            print(j[1],"\n")
+                    else:
+                        print(i,"\n")
+                        
+            else: 
+                print("Não há nenhum histórico registrado para este ID")
+            
+                
+            
+                
+            event_ouvir_thread2.join()
+
+            
+    
         elif opcao == "6":
             limpar_tela()
+            
             sys.exit()
+        
         
         else:
             limpar_tela()

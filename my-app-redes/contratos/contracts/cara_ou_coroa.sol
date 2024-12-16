@@ -4,24 +4,25 @@ pragma solidity ^0.8.0;
 contract CaraOuCoroa {
 
     enum Escolha { NENHUMA, CARA, COROA }
-    enum StatusJogo { NAO_INICIADO, ESPERANDO_JOGADOR2, FINALIZADO }
+    enum StatusJogo { NAO_INICIADO, ESPERANDO_JOGADORES, FINALIZADO }
 
     struct Aposta {
         address jogador1;
-        address jogador2;
         uint256 valorAposta;
-        Escolha escolhaJogador1;
-        Escolha escolhaJogador2;
+        Escolha[] escolhas;
+        address[] jogadores;
         StatusJogo statusJogo;
     }
+     
 
     mapping(bytes32 => Aposta) public apostas;
     mapping(address => bytes32) public apostasPorJogador;
 
     // Eventos
-    event ApostaCriada(bytes32 apostaId, address jogador1, uint256 valorAposta, Escolha escolha);
-    event ApostaAceita(bytes32 apostaId, address jogador2);
-    event JogoFinalizado(bytes32 apostaId, address vencedor, uint256 valorPremio);
+    event ApostaCriada(bytes32 apostaId, address jogador1, uint256 valorAposta,Escolha escolha);
+    event ApostaParticipante(bytes32 apostaId, address jogador, Escolha escolha);
+    event JogoFinalizado(bytes32 apostaId, uint256 valorPremio, address[] vencedores,Escolha resultado);
+    event ApostaEncerrada(bytes32 apostaId);
 
     modifier semApostaAtiva(address jogador) {
         require(apostasPorJogador[jogador] == 0, "Jogador ja possui uma aposta ativa");
@@ -30,21 +31,11 @@ contract CaraOuCoroa {
 
     modifier apostaExistente(bytes32 apostaId) {
         require(apostas[apostaId].jogador1 != address(0), "Aposta nao encontrada");
-        _;
-    }
-
-    modifier somenteJogador1(bytes32 apostaId) {
-        require(msg.sender == apostas[apostaId].jogador1, "Apenas o jogador 1 pode chamar esta funcao");
-        _;
-    }
-
-    modifier somenteJogador2(bytes32 apostaId) {
-        require(msg.sender == apostas[apostaId].jogador2, "Apenas o jogador 2 pode chamar esta funcao");
-        _;
+        _; 
     }
 
     modifier jogoEmAndamento(bytes32 apostaId) {
-        require(apostas[apostaId].statusJogo == StatusJogo.ESPERANDO_JOGADOR2, "Jogo nao esta em andamento");
+        require(apostas[apostaId].statusJogo == StatusJogo.ESPERANDO_JOGADORES, "Jogo nao esta em andamento");
         _;
     }
 
@@ -58,72 +49,107 @@ contract CaraOuCoroa {
         require(msg.value >= 0.001 ether, "Aposta minima e 0.001 ETH");
 
         bytes32 apostaId = keccak256(abi.encodePacked(msg.sender, block.timestamp));
-
-        apostas[apostaId] = Aposta({
-            jogador1: msg.sender,
-            jogador2: address(0),
-            valorAposta: msg.value,
-            escolhaJogador1: _escolha,
-            escolhaJogador2: Escolha.NENHUMA,
-            statusJogo: StatusJogo.ESPERANDO_JOGADOR2
-        });
-
-        apostasPorJogador[msg.sender] = apostaId;
-
-        emit ApostaCriada(apostaId, msg.sender, msg.value, _escolha);
-    }
-
-    // Jogador 2 aceita a aposta
-    function aceitarAposta(bytes32 apostaId, Escolha _escolha) public payable apostaExistente(apostaId) jogoEmAndamento(apostaId) semApostaAtiva(msg.sender) {
         Aposta storage aposta = apostas[apostaId];
 
-        require(msg.sender != aposta.jogador1, "Jogador 1 nao pode aceitar a propria aposta");
-        require(msg.value == aposta.valorAposta, "Jogador 2 deve apostar o mesmo valor de Jogador 1");
-        require(_escolha != aposta.escolhaJogador1, "Jogador 1 ja escolheu esta opcao!");
+        aposta.jogador1 = msg.sender;
+        aposta.valorAposta = msg.value;
+        aposta.statusJogo = StatusJogo.ESPERANDO_JOGADORES;
 
-        aposta.jogador2 = msg.sender;
-        aposta.escolhaJogador2 = _escolha;
-        aposta.statusJogo = StatusJogo.FINALIZADO;
+
+        apostas[apostaId].escolhas.push(_escolha);
+        apostas[apostaId].jogadores.push(msg.sender); // O jogador criador é adicionado à lista de jogadores
 
         apostasPorJogador[msg.sender] = apostaId;
 
-        emit ApostaAceita(apostaId, msg.sender);
-        resolverJogo(apostaId);
+        emit ApostaCriada(apostaId, msg.sender, msg.value,_escolha);
+    }
+
+    // Participar de uma aposta
+    function participarAposta(bytes32 apostaId, Escolha _escolha) public payable apostaExistente(apostaId) jogoEmAndamento(apostaId) semApostaAtiva(msg.sender) {
+        Aposta storage aposta = apostas[apostaId];
+
+        require(aposta.jogadores.length < 3, "Limite de 10 jogadores atingido");
+        require(msg.value == aposta.valorAposta, "O valor da aposta deve ser o mesmo do criador");
+
+        aposta.jogadores.push(msg.sender);
+        aposta.escolhas.push(_escolha);
+        apostasPorJogador[msg.sender] = apostaId;
+
+        emit ApostaParticipante(apostaId, msg.sender, _escolha);
+
+        // Se 10 jogadores participaram, o jogo é finalizado
+        if (aposta.jogadores.length == 3) {
+            aposta.statusJogo = StatusJogo.FINALIZADO;
+            resolverJogo(apostaId);
+        }
     }
 
     // Resolver o jogo
-    function resolverJogo(bytes32 apostaId) public payable apostaExistente(apostaId) jogoFinalizado(apostaId) {
+    function resolverJogo(bytes32 apostaId) public apostaExistente(apostaId) jogoFinalizado(apostaId) {
         Aposta storage aposta = apostas[apostaId];
 
         uint256 resultado = random() % 2; // 0 para CARA, 1 para COROA
+        Escolha escolhaResultado = resultado == 0 ? Escolha.CARA : Escolha.COROA;
 
-        address vencedor;
-        if (resultado == 0) {
-            if (aposta.escolhaJogador1 == Escolha.CARA) {
-                vencedor = aposta.jogador1;
-            } else {
-                vencedor = aposta.jogador2;
-            }
-        } else {
-            if (aposta.escolhaJogador1 == Escolha.COROA) {
-                vencedor = aposta.jogador1;
-            } else {
-                vencedor = aposta.jogador2;
+        address[10] memory vencedores;
+        uint256 totalVencedores = 0;
+        uint256 premioTotal = aposta.valorAposta * aposta.jogadores.length;
+
+        // Verificar vencedores
+        for (uint256 i = 0; i < aposta.jogadores.length; i++) {
+            if (aposta.escolhas[i] == escolhaResultado) {
+                vencedores[totalVencedores] = aposta.jogadores[i];
+                totalVencedores++;
             }
         }
 
-        address payable vencedor_transfer = payable(vencedor);
+        // Se houver vencedores, dividir o prêmio entre eles
+        if (totalVencedores > 0 && aposta.jogadores.length > 1) {
+            uint256 premioPorVencedor = premioTotal / totalVencedores;
+            for (uint256 i = 0; i < totalVencedores; i++) {
+                address payable vencedor = payable(vencedores[i]);
+                vencedor.transfer(premioPorVencedor);
+            }
+        } else {
+            // Se não houver vencedores, devolver o prêmio para todos
+            for (uint256 i = 0; i < aposta.jogadores.length; i++) {
+                address payable jogador = payable(aposta.jogadores[i]);
+                jogador.transfer(aposta.valorAposta);
+            }
+        }
 
-        // Transferir a aposta para o vencedor
-        vencedor_transfer.transfer(aposta.valorAposta * 2);
+        // Criar um array dinâmico para passar no evento
+        address[] memory vencedoresEmitir = new address[](totalVencedores);
+        for (uint256 i = 0; i < totalVencedores; i++) {
+            vencedoresEmitir[i] = vencedores[i];
+        }
 
-        emit JogoFinalizado(apostaId, vencedor, aposta.valorAposta * 2);
+
+        emit JogoFinalizado(apostaId, premioTotal, vencedoresEmitir,escolhaResultado);
 
         // Remover a aposta e resetar estados
-        delete apostasPorJogador[aposta.jogador1];
-        delete apostasPorJogador[aposta.jogador2];
+        for (uint256 i = 0; i < aposta.jogadores.length; i++) {
+            delete apostasPorJogador[aposta.jogadores[i]];
+        }
         delete apostas[apostaId];
     }
+
+    // Função para encerrar a aposta
+    // Função para encerrar a aposta
+    function encerrarAposta(bytes32 apostaId) public apostaExistente(apostaId) {
+        require(apostas[apostaId].escolhas.length > 0, "Array de escolhas esta vazio");
+        require(apostas[apostaId].jogadores.length > 0, "Array de jogadores esta vazio");
+        Aposta storage aposta = apostas[apostaId];
+        require(msg.sender == aposta.jogador1, "Somente o jogador que criou a aposta pode encerra-la!");
+        require(aposta.jogadores.length >= 1, "E necessario ter pelo menos um jogador para encerrar a aposta");
+        
+
+        aposta.statusJogo = StatusJogo.FINALIZADO;
+        resolverJogo(apostaId);
+
+        emit ApostaEncerrada(apostaId);
+    }
+
 
     function random() private view returns (uint256) {
         return uint256(keccak256(abi.encodePacked(block.timestamp, block.prevrandao, msg.sender)));
