@@ -10,7 +10,7 @@ from eventos import ouvir_eventos,sair_func,getHistorico
 import threading
 import queue
 from datetime import datetime
-import re
+
 
 load_dotenv()
 #infura_url = f'https://sepolia.infura.io/v3/{os.getenv("KEY_API")}'

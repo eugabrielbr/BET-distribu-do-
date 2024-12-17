@@ -99,7 +99,6 @@ contract CaraOuCoroa {
 
     }
     
-        
     
 
     // Resolver o jogo

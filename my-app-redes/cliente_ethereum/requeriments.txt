@@ -1,0 +1,7 @@
+web3
+pytz
+python-dotenv
+eth-utils
+mnemonic
+iota-sdk
+requests

@@ -2,6 +2,9 @@ import time
 import json
 from web3 import Web3
 import threading
+import signal
+from datetime import datetime, timedelta
+import pytz
 
 # Conectando-se ao nó local (ajuste a URL, se necessário)
 w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
@@ -12,9 +15,7 @@ dic_historico_aposta_encerrada = {}
 dic_historico_aposta_participantes = {}
 list_finalizados = [] 
 type = None
-import signal
-from datetime import datetime, timedelta
-import pytz
+
 
 
 def signal_handler(sig, frame):

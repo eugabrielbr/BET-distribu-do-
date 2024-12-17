@@ -437,6 +437,7 @@ def aceitarAposta(contractAddress,privateKey,addressFrom,escolha,idAposta,valor_
     print(f"Aceitando aposta. Transação Hash: {w3.to_hex(txn_hash)}")
     print(f"Esperando confimação da transação. Aguarde...")
     confirmarIndexacao(txn_hash)
+    infoTransacao(txn_hash)
 
 
 def revert(contractAddress,privateKey,addressFrom):
@@ -500,6 +501,23 @@ def confirmarIndexacao(tx_hash):
       sleep(15)
 
     print("Houve algum erro, tente novamente mais tarde")
+
+
+def infoTransacao(tx_hash):
+  
+    transaction = w3.eth.getTransaction(tx_hash)
+
+  # Exibir informações sobre a transação
+    if transaction:
+        print("Hash da Transação:", transaction['hash'])
+        print("De:", transaction['from'])
+        print("Para:", transaction['to'])
+        print("Valor (em Wei):", transaction['value'])
+        print("Taxa de Gas:", transaction['gas'])
+        print("Preço do Gas:", transaction['gasPrice'])
+        print("Nonce:", transaction['nonce'])
+    else:
+        print("Transação não encontrada.")
 
 
 def encerrarAposta(contractAddress,privateKey,addressFrom,idAposta):
