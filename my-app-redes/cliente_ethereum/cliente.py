@@ -17,7 +17,7 @@ load_dotenv()
 infura_url = 'http://localhost:8545'
 w3 = Web3(Web3.HTTPProvider(infura_url))
 w3.middleware_onion.inject(ExtraDataToPOAMiddleware, layer=0)
-endereco_contrato = '0x0165878A594ca255338adfa4d48449f69242Eb8F' 
+endereco_contrato = '0x5FbDB2315678afecb367f032d93F642f64180aa3' 
 def limpar_tela():
     """Limpa a tela do terminal para uma visualização mais limpa."""
     os.system('cls' if os.name == 'nt' else 'clear')

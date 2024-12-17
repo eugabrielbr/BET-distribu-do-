@@ -399,6 +399,7 @@ def criarAposta(contractAddress,privateKey,addressFrom,escolha,valor_aposta,data
    
     print(f"Esperando confimação da transação. Aguarde...")
     confirmarIndexacao(txn_hash)
+    infoTransacao(txn_hash)
 
 
 def aceitarAposta(contractAddress,privateKey,addressFrom,escolha,idAposta,valor_aposta): 
@@ -505,19 +506,21 @@ def confirmarIndexacao(tx_hash):
 
 def infoTransacao(tx_hash):
   
-    transaction = w3.eth.getTransaction(tx_hash)
+    transaction = w3.eth.get_transaction(tx_hash)
 
   # Exibir informações sobre a transação
     if transaction:
-        print("Hash da Transação:", transaction['hash'])
+        print("Hash da Transação:", transaction['hash'].hex())
         print("De:", transaction['from'])
         print("Para:", transaction['to'])
         print("Valor (em Wei):", transaction['value'])
         print("Taxa de Gas:", transaction['gas'])
         print("Preço do Gas:", transaction['gasPrice'])
         print("Nonce:", transaction['nonce'])
+        print()
     else:
         print("Transação não encontrada.")
+        print()
 
 
 def encerrarAposta(contractAddress,privateKey,addressFrom,idAposta):
@@ -551,4 +554,5 @@ def encerrarAposta(contractAddress,privateKey,addressFrom,idAposta):
     txn_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
     print(f"Encerrando aposta! Transação Hash: {w3.to_hex(txn_hash)}")
     confirmarIndexacao(txn_hash)
+    infoTransacao(txn_hash)
     
