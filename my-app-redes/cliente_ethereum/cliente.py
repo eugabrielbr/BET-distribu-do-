@@ -236,7 +236,7 @@ def main():
                 print("\nOpção inválida! Tente novamente.\n")
                 
         except Exception as e:
-            print("Nao foi possivel")
+            print(e)
             
 
 
