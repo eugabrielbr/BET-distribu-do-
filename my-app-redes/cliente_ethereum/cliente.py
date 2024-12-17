@@ -132,104 +132,111 @@ def main():
     limpar_tela()
 
     while True: 
-
+        
+        balance = w3.eth.get_balance(cliente)
+        eth_balance = w3.from_wei(balance, 'ether')
         opcao = menu(eth_balance,convert_reais)
         
-        if opcao == "1": 
-            
-            limpar_tela()
-            print("No momento, apenas o jogo CARA ou COROA esta disponível!\n")
-            valorAposta = float(input("Insira o valor da aposta (ETH): "))
-            caraOuCoroa = int(input("Escolha CARA (1) ou COROA(2): "))
-            dia = int(input("Insira o dia: "))
-            mes = int(input("Insira o mes: "))
-            ano = int(input("Insira o ano: "))
-            hora = int(input("Insira a hora: "))
-            minutos = int(input("Insira os minutos: "))
-            
-            data_limite = datetime(ano,mes,dia,hora,minutos,0)
-            timestamp_limite = int(data_limite.timestamp())
-            
-            sla = comunicacao.criarAposta(endereco_contrato,cliente_private_key,cliente,caraOuCoroa,valorAposta,timestamp_limite)
+        try:
         
-        elif opcao == "2":
-            
-            limpar_tela()
-            idAposta = input("Insira o ID do evento que deseja participar: ")
-            caraOuCoroa = int(input("Escolha CARA (1) ou COROA(2): "))
-            print("Para confirmar, digite o valor exigido na aposta.\nObs.: valores diferentes resultaram no cancelamento da aposta")
-            valorAposta = input("\n")
-            sla3 = comunicacao.aceitarAposta(endereco_contrato,cliente_private_key,cliente,caraOuCoroa,idAposta,valorAposta)
-
-        elif opcao == "3":
-            limpar_tela()
-            idAposta = input("Insira o ID do evento que deseja encerrar: ")
-            sla4 = comunicacao.encerrarAposta(endereco_contrato,cliente_private_key,cliente,idAposta) #fazer esse aq
-            
-        elif opcao == "4":
-            limpar_tela()
-            # essa opcao e eficiente apenas em rede local, na rede publica vale mais a pena criar listas de registro no contrato
-            
-            event_ouvir_thread = threading.Thread(target=ouvir_eventos, args=(-1,))
-            event_ouvir_thread.daemon = True  # Para que a thread termine quando o programa principal terminar
-            event_ouvir_thread.start()
-            event_ouvir_thread.join()
-            
-            # parametros args
-            # 0 = todos os eventos, mas nao printa nada
-            # 1 = ApostaCriada
-            # 2 = ApostaParticipante
-            # 3 = JogoFinalizado
-            # 4 = ApostaEncerrada
-            # -1 = todos os eventos mas so printa eventos disponiveis
-            # -2 = todos os eventos mas nao printa nada
-            
-            limpar_tela()
-        
-        elif opcao == "5":
-            limpar_tela()
-            
-            idAposta = input("Insira o ID do evento que deseja ver o historico: ")
-            resultado_queue = queue.Queue()
-            event_ouvir_thread2 = threading.Thread(target=ouvir_eventos, args=(-2,))
-            event_ouvir_thread2.daemon = True  # Para que a thread termine quando o programa principal terminar
-            event_ouvir_thread2.start()
-            sleep(2)
-            lista_anti_repeticao = []
-            
-            listaHistorico = getHistorico(idAposta);
-            
-            if listaHistorico != []:
-                
-                for i in listaHistorico:
+            if opcao == "1": 
                     
-                    if isinstance(i, list):
-                        for j in i:
-                            if j[0] not in lista_anti_repeticao:  
-                                print(j[1],"\n")
-                            lista_anti_repeticao.append(j[0])
-                    else:
-                        print(i,"\n")
+                limpar_tela()
+                print("No momento, apenas o jogo CARA ou COROA esta disponível!\n")
+                valorAposta = float(input("Insira o valor da aposta (ETH): "))
+                caraOuCoroa = int(input("Escolha CARA (1) ou COROA(2): "))
+                dia = int(input("Insira o dia: "))
+                mes = int(input("Insira o mes: "))
+                ano = int(input("Insira o ano: "))
+                hora = int(input("Insira a hora: "))
+                minutos = int(input("Insira os minutos: "))
+                
+                data_limite = datetime(ano,mes,dia,hora,minutos,0)
+                timestamp_limite = int(data_limite.timestamp())
+                
+                sla = comunicacao.criarAposta(endereco_contrato,cliente_private_key,cliente,caraOuCoroa,valorAposta,timestamp_limite)
+            
+        
+            elif opcao == "2":
+                
+                limpar_tela()
+                idAposta = input("Insira o ID do evento que deseja participar: ")
+                caraOuCoroa = int(input("Escolha CARA (1) ou COROA(2): "))
+                print("Para confirmar, digite o valor exigido na aposta.\nObs.: valores diferentes resultaram no cancelamento da aposta")
+                valorAposta = input("\n")
+                sla3 = comunicacao.aceitarAposta(endereco_contrato,cliente_private_key,cliente,caraOuCoroa,idAposta,valorAposta)
+
+            elif opcao == "3":
+                limpar_tela()
+                idAposta = input("Insira o ID do evento que deseja encerrar: ")
+                sla4 = comunicacao.encerrarAposta(endereco_contrato,cliente_private_key,cliente,idAposta) #fazer esse aq
+                
+            elif opcao == "4":
+                limpar_tela()
+                # essa opcao e eficiente apenas em rede local, na rede publica vale mais a pena criar listas de registro no contrato
+                
+                event_ouvir_thread = threading.Thread(target=ouvir_eventos, args=(-1,))
+                event_ouvir_thread.daemon = True  # Para que a thread termine quando o programa principal terminar
+                event_ouvir_thread.start()
+                event_ouvir_thread.join()
+                
+                # parametros args
+                # 0 = todos os eventos, mas nao printa nada
+                # 1 = ApostaCriada
+                # 2 = ApostaParticipante
+                # 3 = JogoFinalizado
+                # 4 = ApostaEncerrada
+                # -1 = todos os eventos mas so printa eventos disponiveis
+                # -2 = todos os eventos mas nao printa nada
+                
+                limpar_tela()
+            
+            elif opcao == "5":
+                limpar_tela()
+                
+                idAposta = input("Insira o ID do evento que deseja ver o historico: ")
+                resultado_queue = queue.Queue()
+                event_ouvir_thread2 = threading.Thread(target=ouvir_eventos, args=(-2,))
+                event_ouvir_thread2.daemon = True  # Para que a thread termine quando o programa principal terminar
+                event_ouvir_thread2.start()
+                sleep(1)
+                lista_anti_repeticao = []
+                
+                listaHistorico = getHistorico(idAposta);
+                
+                if listaHistorico != []:
+                    
+                    for i in listaHistorico:
                         
-            else: 
-                print("Não há nenhum histórico registrado para este ID")
-            
+                        if isinstance(i, list):
+                            for j in i:
+                                if j[0] not in lista_anti_repeticao:  
+                                    print(j[1],"\n")
+                                lista_anti_repeticao.append(j[0])
+                        else:
+                            print(i,"\n")
+                            
+                else: 
+                    print("Não há nenhum histórico registrado para este ID")
                 
-            
-                
-            event_ouvir_thread2.join()
+    
+                    
+                event_ouvir_thread2.join()
 
             
     
-        elif opcao == "6":
-            limpar_tela()
+            elif opcao == "6":
+                limpar_tela()
+                
+                sys.exit()
             
-            sys.exit()
-        
-        
-        else:
-            limpar_tela()
-            print("\nOpção inválida! Tente novamente.\n")
+            
+            else:
+                limpar_tela()
+                print("\nOpção inválida! Tente novamente.\n")
+                
+        except Exception as e:
+            print("Nao foi possivel")
             
 
 

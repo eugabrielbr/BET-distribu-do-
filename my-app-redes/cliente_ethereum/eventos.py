@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import pytz
 
 # Conectando-se ao nó local (ajuste a URL, se necessário)
-w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
+w3 = Web3(Web3.HTTPProvider("http://localhost:8545"))
 sair = threading.Event()
 dic_historico_aposta_criada = {}
 dic_historico_aposta_finalizada = {}
