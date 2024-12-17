@@ -88,7 +88,11 @@ A biblioteca Web3 é uma ferramenta essencial para a interação com blockchains
 
 <h3>Odds</h3>
 
+<p>O sistema implementado garante o cálculo correto das odds das apostas e a distribuição proporcional dos prêmios aos jogadores, considerando que o valor apostado por cada participante é fixo e igual para todos. Essa uniformidade no valor das apostas simplifica o cálculo das probabilidades e assegura a equidade entre os jogadores.</p>
 
+<p>A definição das odds é feita com base na quantidade de jogadores que escolhem cada lado (cara ou coroa). Como o valor apostado é o mesmo para todos, as odds refletem diretamente a proporção de jogadores em cada opção. Por exemplo, se mais jogadores apostam em "cara" do que em "coroa", aqueles que escolheram "coroa" têm maiores chances de retorno, pois o prêmio total será dividido entre um grupo menor de vencedores.</p>
+
+<p>A redistribuição dos prêmios ocorre automaticamente após o encerramento da aposta, de acordo com o resultado final (cara ou coroa). O valor total das apostas, menos possíveis taxas, é distribuído igualmente entre os jogadores que escolheram o lado vencedor. Como todos os participantes apostam o mesmo valor, a divisão do prêmio é feita de forma simples e direta, sem necessidade de cálculos adicionais relacionados a diferentes montantes apostados.</p>
 
 <h3>Contabilidade</h3>
 
@@ -99,6 +103,12 @@ A biblioteca Web3 é uma ferramenta essencial para a interação com blockchains
 <p>A implementação das funções criarAposta e resolverJogo também é crucial para garantir a integridade do sistema. Elas utilizam o contrato inteligente para efetuar transações de criação e resolução de apostas, o que significa que todas as interações com o blockchain são realizadas de forma segura. As funções constroem e assinam transações corretamente, o que impede que transações fraudulentas ou mal-formadas sejam executadas. Isso é particularmente importante para a criação de apostas, onde o saldo do jogador é bloqueado no contrato inteligente, e para a resolução de jogos, onde os prêmios são distribuídos de acordo com os resultados calculados.</p>
 
 <h3>Publicação</h3>
+
+<p>No tópico de publicação, é importante destacar que o sistema foi desenvolvido para garantir a privacidade e o controle de acesso ao histórico das apostas. Diferentemente de sistemas que permitem a visualização completa de todos os eventos ou transações realizadas, este sistema só possibilita o acesso ao histórico de uma aposta específica mediante o uso do seu identificador único (ID).</p>
+
+<p>Essa abordagem significa que não é possível listar todas as apostas realizadas indiscriminadamente. Para consultar informações sobre uma aposta, o usuário precisa fornecer o ID correspondente, o que restringe o acesso aos dados apenas àqueles que possuem esse identificador. Essa funcionalidade não apenas limita o escopo das consultas, mas também reforça a segurança e privacidade das informações no sistema, evitando acessos não autorizados ou análises em larga escala sem o devido consentimento.</p>
+
+<p>O uso do ID como chave de acesso promove um controle mais preciso sobre quais apostas podem ser consultadas e por quem, alinhando-se às boas práticas de proteção de dados e privacidade em sistemas distribuídos e baseados em blockchain. Dessa forma, a transparência sobre os resultados é mantida, mas sem expor o histórico completo das transações de forma aberta.</p>
 
 </div>
   
