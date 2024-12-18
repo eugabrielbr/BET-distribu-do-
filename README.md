@@ -111,6 +111,12 @@ A biblioteca Web3 é uma ferramenta essencial para a interação com blockchains
 <p>O uso do ID como chave de acesso promove um controle mais preciso sobre quais apostas podem ser consultadas e por quem, alinhando-se às boas práticas de proteção de dados e privacidade em sistemas distribuídos e baseados em blockchain. Dessa forma, a transparência sobre os resultados é mantida, mas sem expor o histórico completo das transações de forma aberta.</p>
 
 </div>
+
+<div id="rodarprojeto">
+<h3>Como rodar o projeto</h3>
+
+  <p>Para rodar localmente deve-se entrar na pasta contratos e criar uma rede local com hardhat (npx hardhat node --hostname 0.0.0.0). Em seguida, fazer o deploy do contrato (npx hardhat run scripts/deploy-contract.js --network localhost). Por fim, entrar no diretório cliente_ethereum, baixar as dependências (pip install requirements.txt) e finalmente rodar a aplicação cliente.py. Se o contrato por algum motivo for alterado, deve-se consultar o endereço dele na blockchain e sua abi e passar para os códigos comunicação.py e eventos.py.</p>
+</div>
   
 <h2>Conclusão</h2>
 <div id="conclusao">
